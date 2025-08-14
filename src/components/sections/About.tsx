@@ -6,6 +6,7 @@ import AnimatedBackground from "@/components/AnimatedBackground";
 import { useEffect, useMemo, useRef } from "react";
 import { bio } from "@/lib/data";
 import { gsap } from "gsap";
+import { getAssetPath } from "@/lib/utils";
 
 // Deterministic PRNG to avoid SSR/client hydration mismatches
 function mulberry32(seed: number) {
@@ -148,7 +149,7 @@ export default function About() {
                 className="pointer-events-none absolute -inset-4 rounded-full opacity-60 blur-md bg-[conic-gradient(from_0deg,rgba(56,189,248,0.05),rgba(56,189,248,0.6),rgba(59,130,246,0.05))]"
               />
               <Image
-                src="/profilePic.jpg"
+                src={getAssetPath("/profilePic.jpg")}
                 alt="Profile image"
                 fill
                 sizes="(min-width: 1024px) 300px, (min-width: 640px) 260px, 220px"
@@ -173,7 +174,7 @@ export default function About() {
               transition={{ duration: 0.6 }}
               className="text-4xl sm:text-6xl font-bold tracking-tight"
             >
-              ${`Hi, I'm`}<span className="text-gradient">Ivan Kim Limson</span>
+              {`Hi, I'm `}<span className="text-gradient">Ivan Kim Limson</span>
             </motion.h1>
 
             {/* badges */}

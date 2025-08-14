@@ -37,12 +37,15 @@ export type Project = {
   tags?: string[];
 };
 
+const isProd = process.env.NODE_ENV === 'production';
+const basePath = isProd ? '/limson-nextjs-portfolio' : '';
+
 export const projects: Project[] = [
   {
     title: "Realtime Dashboard",
     description:
       "Realtime analytics dashboard with WebSocket updates, charting, and role-based access.",
-    image: "/next.svg",
+    image: `${basePath}/next.svg`,
     github: "https://github.com/yourname/realtime-dashboard",
     demo: "https://example.com/realtime",
     tags: ["Next.js", "WebSockets", "Tailwind"],
@@ -50,7 +53,7 @@ export const projects: Project[] = [
   {
     title: "3D Product Gallery",
     description: "Interactive 3D cards with GSAP parallax and Framer Motion hover effects.",
-    image: "/vercel.svg",
+    image: `${basePath}/vercel.svg`,
     github: "https://github.com/yourname/3d-gallery",
     demo: "https://example.com/gallery",
     tags: ["Framer Motion", "GSAP"],
