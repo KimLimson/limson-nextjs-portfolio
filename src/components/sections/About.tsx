@@ -3,8 +3,8 @@
 import Image from "next/image";
 import { motion, useInView } from "framer-motion";
 import AnimatedBackground from "@/components/AnimatedBackground";
-import { useEffect, useMemo, useRef, useState } from "react";
-import { bio, projects } from "@/lib/data";
+import { useEffect, useMemo, useRef } from "react";
+import { bio } from "@/lib/data";
 import { gsap } from "gsap";
 
 // Deterministic PRNG to avoid SSR/client hydration mismatches
@@ -173,7 +173,7 @@ export default function About() {
               transition={{ duration: 0.6 }}
               className="text-4xl sm:text-6xl font-bold tracking-tight"
             >
-              Hi, I'm <span className="text-gradient">Ivan Kim Limson</span>
+              ${`Hi, I'm`}<span className="text-gradient">Ivan Kim Limson</span>
             </motion.h1>
 
             {/* badges */}
