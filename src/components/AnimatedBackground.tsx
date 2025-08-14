@@ -13,23 +13,38 @@ export default function AnimatedBackground() {
 
     const setSize = () => {
       const dpr = Math.min(window.devicePixelRatio || 1, 2);
+      const docHeight = Math.max(
+        document.body.scrollHeight,
+        document.body.offsetHeight,
+        document.documentElement.clientHeight,
+        document.documentElement.scrollHeight,
+        document.documentElement.offsetHeight
+      );
+      
       canvas.width = Math.floor(window.innerWidth * dpr);
-      canvas.height = Math.floor(window.innerHeight * dpr);
+      canvas.height = Math.floor(docHeight * dpr);
       canvas.style.width = window.innerWidth + "px";
-      canvas.style.height = window.innerHeight + "px";
+      canvas.style.height = docHeight + "px";
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     };
 
     setSize();
     let width = window.innerWidth;
-    let height = window.innerHeight;
+    let height = Math.max(
+      document.body.scrollHeight,
+      document.documentElement.scrollHeight
+    );
 
+    // Initialize particles only on client
     const particles = Array.from({ length: 60 }, () => ({
       x: Math.random() * width,
       y: Math.random() * height,
       vx: (Math.random() - 0.5) * 0.6,
       vy: (Math.random() - 0.5) * 0.6,
       r: Math.random() * 1.8 + 0.5,
+      type: Math.random() < 0.3 ? 'glow' : Math.random() < 0.6 ? 'cyan' : 'white',
+      opacity: Math.random() * 0.4 + 0.3,
+      glowIntensity: Math.random() * 0.8 + 0.2,
     }));
 
     const gradient = ctx.createLinearGradient(0, 0, width, height);
@@ -41,16 +56,47 @@ export default function AnimatedBackground() {
       ctx.fillStyle = gradient;
       ctx.fillRect(0, 0, width, height);
 
-      ctx.fillStyle = "rgba(255,255,255,0.6)";
       for (const p of particles) {
         p.x += p.vx;
         p.y += p.vy;
         if (p.x < 0 || p.x > width) p.vx *= -1;
         if (p.y < 0 || p.y > height) p.vy *= -1;
 
-        ctx.beginPath();
-        ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
-        ctx.fill();
+        ctx.save();
+        
+        if (p.type === 'glow') {
+          // Glowing blue particle
+          const glowSize = p.r * 3;
+          const gradient = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, glowSize);
+          gradient.addColorStop(0, `rgba(0, 191, 255, ${p.opacity * p.glowIntensity})`);
+          gradient.addColorStop(0.4, `rgba(0, 119, 255, ${p.opacity * 0.4})`);
+          gradient.addColorStop(1, 'rgba(0, 119, 255, 0)');
+          
+          ctx.fillStyle = gradient;
+          ctx.beginPath();
+          ctx.arc(p.x, p.y, glowSize, 0, Math.PI * 2);
+          ctx.fill();
+          
+          // Core
+          ctx.fillStyle = `rgba(255, 255, 255, ${p.opacity})`;
+          ctx.beginPath();
+          ctx.arc(p.x, p.y, p.r * 0.3, 0, Math.PI * 2);
+          ctx.fill();
+        } else if (p.type === 'cyan') {
+          // Cyan particle
+          ctx.fillStyle = `rgba(34, 211, 238, ${p.opacity})`;
+          ctx.beginPath();
+          ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+          ctx.fill();
+        } else {
+          // White particle
+          ctx.fillStyle = `rgba(255, 255, 255, ${p.opacity})`;
+          ctx.beginPath();
+          ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+          ctx.fill();
+        }
+        
+        ctx.restore();
       }
       raf.current = requestAnimationFrame(render);
     };
@@ -60,7 +106,10 @@ export default function AnimatedBackground() {
     const onResize = () => {
       setSize();
       width = window.innerWidth;
-      height = window.innerHeight;
+      height = Math.max(
+        document.body.scrollHeight,
+        document.documentElement.scrollHeight
+      );
     };
     window.addEventListener("resize", onResize);
 

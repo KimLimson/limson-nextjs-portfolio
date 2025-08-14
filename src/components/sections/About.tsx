@@ -3,7 +3,7 @@
 import Image from "next/image";
 import { motion, useInView } from "framer-motion";
 import AnimatedBackground from "@/components/AnimatedBackground";
-import { useEffect, useMemo, useRef } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { bio } from "@/lib/data";
 import { gsap } from "gsap";
 import { getAssetPath } from "@/lib/utils";
@@ -25,6 +25,11 @@ export default function About() {
   const haloRef = useRef<HTMLDivElement | null>(null);
   const particleRefs = useRef<HTMLSpanElement[]>([]);
   const inView = useInView(containerRef, { once: true, margin: "-120px" });
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   // Idle halo rotation
   useEffect(() => {
@@ -58,48 +63,96 @@ export default function About() {
   }, []);
 
   const particles = useMemo(() => {
-    // Fixed seed ensures server and client produce the same sequence
+    if (!mounted) return [];
     const rand = mulberry32(123456);
     return Array.from({ length: 14 }, () => ({
       top: rand() * 100,
       left: rand() * 100,
       size: rand() * 3 + 1,
     }));
-  }, []);
+  }, [mounted]);
 
   const handleMove = (e: React.MouseEvent<HTMLDivElement>) => {
     const rect = e.currentTarget.getBoundingClientRect();
     const x = e.clientX - rect.left;
     const y = e.clientY - rect.top;
-    const rx = ((y - rect.height / 2) / rect.height) * -16;
-    const ry = ((x - rect.width / 2) / rect.width) * 16;
+    const rx = ((y - rect.height / 2) / rect.height) * -20;
+    const ry = ((x - rect.width / 2) / rect.width) * 20;
     gsap.to(imgCardRef.current, {
       rotateX: rx,
       rotateY: ry,
       transformPerspective: 900,
-      duration: 0.25,
+      duration: 0.3,
       ease: "power2.out",
+      overwrite: "auto",
     });
   };
+
   const handleEnter = () => {
     gsap.to(imgCardRef.current, {
-      scale: 1.03,
-      z: 24,
+      scale: 1.05,
+      z: 32,
       transformPerspective: 900,
-      duration: 0.25,
-      ease: "power2.out",
+      duration: 0.4,
+      ease: "back.out(1.2)",
+      overwrite: "auto",
     });
   };
+
   const handleLeave = () => {
     gsap.to(imgCardRef.current, {
       rotateX: 0,
       rotateY: 0,
       scale: 1,
       z: 0,
-      duration: 0.5,
-      ease: "power3.out",
+      duration: 0.8,
+      ease: "elastic.out(1, 0.5)",
+      overwrite: "auto",
     });
   };
+
+  // Floating profile image animation with 3D circular tilting
+  useEffect(() => {
+    if (!imgCardRef.current) return;
+    
+    const tl = gsap.timeline({ repeat: -1 });
+    tl.to(imgCardRef.current, {
+      rotateX: 8,
+      rotateY: 12,
+      y: -6,
+      duration: 4,
+      ease: "sine.inOut",
+      transformPerspective: 900,
+    })
+    .to(imgCardRef.current, {
+      rotateX: -8,
+      rotateY: 12,
+      y: 6,
+      duration: 4,
+      ease: "sine.inOut",
+      transformPerspective: 900,
+    })
+    .to(imgCardRef.current, {
+      rotateX: -8,
+      rotateY: -12,
+      y: -6,
+      duration: 4,
+      ease: "sine.inOut",
+      transformPerspective: 900,
+    })
+    .to(imgCardRef.current, {
+      rotateX: 8,
+      rotateY: -12,
+      y: 6,
+      duration: 4,
+      ease: "sine.inOut",
+      transformPerspective: 900,
+    });
+
+    return () => {
+      tl.kill();
+    };
+  }, []);
 
   return (
     <section id="about" className="min-h-screen flex items-center justify-center relative overflow-visible">
@@ -142,7 +195,7 @@ export default function About() {
           >
             <div
               ref={imgCardRef}
-              className="relative w-full h-full rounded-full border border-white/10 bg-white/5 backdrop-blur-md shadow-inner shadow-[0_0_20px_rgba(34,211,238,0.15)] overflow-hidden ring-0 group-hover:ring-4 group-hover:ring-cyan-400/30 group-hover:shadow-[0_0_40px_rgba(34,211,238,0.35)] transition"
+              className="relative w-full h-full rounded-full border border-white/10 bg-white/5 backdrop-blur-md shadow-inner shadow-[0_0_20px_rgba(34,211,238,0.15)] overflow-hidden ring-4 ring-cyan-400/20 shadow-[0_0_30px_rgba(34,211,238,0.25)] group-hover:ring-cyan-400/30 group-hover:shadow-[0_0_40px_rgba(34,211,238,0.35)] transition"
             >
               <div
                 ref={haloRef}
