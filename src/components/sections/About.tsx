@@ -111,51 +111,11 @@ export default function About() {
     });
   };
 
-  // Floating profile image animation with 3D circular tilting
-  useEffect(() => {
-    if (!imgCardRef.current) return;
-    
-    const tl = gsap.timeline({ repeat: -1 });
-    tl.to(imgCardRef.current, {
-      rotateX: 8,
-      rotateY: 12,
-      y: -6,
-      duration: 4,
-      ease: "sine.inOut",
-      transformPerspective: 900,
-    })
-    .to(imgCardRef.current, {
-      rotateX: -8,
-      rotateY: 12,
-      y: 6,
-      duration: 4,
-      ease: "sine.inOut",
-      transformPerspective: 900,
-    })
-    .to(imgCardRef.current, {
-      rotateX: -8,
-      rotateY: -12,
-      y: -6,
-      duration: 4,
-      ease: "sine.inOut",
-      transformPerspective: 900,
-    })
-    .to(imgCardRef.current, {
-      rotateX: 8,
-      rotateY: -12,
-      y: 6,
-      duration: 4,
-      ease: "sine.inOut",
-      transformPerspective: 900,
-    });
-
-    return () => {
-      tl.kill();
-    };
-  }, []);
-
   return (
-    <section id="about" className="min-h-screen flex items-center justify-center relative overflow-visible">
+    <section
+      id="about"
+      className="min-h-screen flex items-center justify-center relative overflow-visible"
+    >
       <AnimatedBackground />
       {/* floating particles */}
       <div className="pointer-events-none absolute inset-0 -z-10">
@@ -227,7 +187,8 @@ export default function About() {
               transition={{ duration: 0.6 }}
               className="text-4xl sm:text-6xl font-bold tracking-tight"
             >
-              {`Hi, I'm `}<span className="text-gradient">Ivan Kim Limson</span>
+              {`Hi, I'm `}
+              <span className="text-gradient">Ivan Kim Limson</span>
             </motion.h1>
 
             {/* badges */}
